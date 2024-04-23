@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "bowling-7dd8b": {
+      "hosting": {
+        "bowling": [
+          "bowling-7dd8b"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "bowling-7dd8b"
+  }
+}

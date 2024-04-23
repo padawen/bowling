@@ -1,0 +1,29 @@
+<div class="reservation-container">
+    <h2>Reserve Lane {{ laneId }}</h2>
+    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="fill">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Time</mat-label>
+        <input matInput type="time" formControlName="time">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Number of Players</mat-label>
+        <input matInput type="number" formControlName="numberOfPlayers">
+      </mat-form-field>
+
+      <div *ngIf="reservationError" class="error-message">
+        <mat-error>{{ reservationError }}</mat-error>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="!reservationForm.valid">
+        Reserve
+      </button>
+    </form>
+  </div>

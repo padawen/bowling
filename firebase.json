@@ -1,0 +1,9 @@
+{
+  "hosting": [
+    {
+      "target": "bowling",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
+}
