@@ -1,0 +1,32 @@
+.reservation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #fff;
+  margin-bottom: 10px;
+}
+
+.reservation-info {
+  display: flex;
+  align-items: center;
+}
+
+.lane-icon {
+  font-size: 48px;
+  color: #007bff;
+  margin-right: 10px;
+}
+
+.reservation-details {
+  font-size: 16px;
+}
+
+.time-range {
+  margin-top: 5px;
+}
+
+.reservation-actions button {
+  margin-left: 10px;
+}

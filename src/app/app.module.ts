@@ -9,21 +9,25 @@ import { MaterialModule } from './material/material/material.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environments';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { CommonModule } from '@angular/common';
+import { ManagerComponent } from './pages/manager/manager.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
-    
+    ManagerComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
-    MaterialModule
-  ],
+    MaterialModule,
+    CommonModule
+   ],
   providers: [
     provideAnimationsAsync()
   ],

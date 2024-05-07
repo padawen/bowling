@@ -1,13 +1,14 @@
 <div class="lane-grid">
-    <mat-card *ngFor="let lane of lanes" class="lane-card">
-      <mat-card-header>
-        <mat-card-title>{{ lane.name }}</mat-card-title>
-        <mat-card-subtitle>{{ lane.description }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" [routerLink]="['/reservation', lane.id]">
-          Make a Reservation
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+  <mat-card *ngFor="let lane of lanes" class="lane-card">
+    <img mat-card-image [src]="lane.imageUrl" alt="Image of {{ lane.name }}">
+    <mat-card-header>
+      <mat-card-title>{{ lane.name }}</mat-card-title>
+      <mat-card-subtitle>{{ lane.description }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" [routerLink]="['/reservation', lane.id]">
+        Make a Reservation
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

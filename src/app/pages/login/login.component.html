@@ -1,17 +1,31 @@
-<span class="loading-indicator" *ngIf="loading">
+<div *ngIf="loading" class="loading-indicator">
     <mat-spinner></mat-spinner>
-</span>
-
-<div class="main_component">
+  </div>
+  
+  <div class="main_component">
     <h1>Welcome to my homepage!</h1>
-    <mat-form-field>
-        <mat-label for="email">Email: </mat-label><input matInput type="text" [formControl]="email" />
-    </mat-form-field>
-    <mat-form-field>
-        <mat-label for="password">Password: </mat-label><input matInput type="password" [formControl]="password" />
-    </mat-form-field>
-    <span>
-        <span><button mat-raised-button color="primary" (click)="login()">Login</button></span>
-        <span><button mat-raised-button color="primary" [routerLink]="'/register'">Register</button></span>
-    </span>
-</div>
+  
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-form-field>
+        <mat-label>Email:</mat-label>
+        <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['required']">Email is required</mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['email']">Please enter a valid email</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Password:</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Password is required</mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['minlength']">
+          Password must be at least 6 characters long
+        </mat-error>
+      </mat-form-field>
+  
+      <div>
+        <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || loading">Login</button>
+        <button mat-raised-button color="primary" routerLink="/register">Register</button>
+      </div>
+    </form>
+  </div>
+  

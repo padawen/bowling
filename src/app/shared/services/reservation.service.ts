@@ -2,42 +2,108 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Observable } from 'rxjs';
-import firebase from 'firebase/compat/app'; // Ensure you have the firebase imports needed for types
+import { map } from 'rxjs/operators';
+import firebase from 'firebase/compat/app';
+import { Reservation } from '../models/reservation';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReservationService {
-  
+
   constructor(
     private firestore: AngularFirestore,
     private afAuth: AngularFireAuth
   ) {}
 
-  async addReservation(laneId: number, start: Date, end: Date, numberOfPlayers: number): Promise<void> {
+  
+  async checkAndAddReservation(reservation: Reservation): Promise<void> {
     const user = await this.afAuth.currentUser;
     if (!user) {
       throw new Error('Authentication required');
     }
+
+    
+    const reservations = await this.checkAvailability(reservation.laneId, reservation.startTime, reservation.endTime);
+    if (reservations.length > 0) {
+      throw new Error('This lane is already reserved for the selected time. Please choose a different time.');
+    }
+
+    
+    await this.addReservation(reservation);
+  }
+
+  
+  async addReservation(reservation: Reservation): Promise<void> {
+    const user = await this.afAuth.currentUser;
+    if (!user) {
+      throw new Error('Authentication required');
+    }
+
     const reservationRef = this.firestore.collection('reservations').doc();
-    return reservationRef.set({
-      laneId: laneId,
-      startTime: firebase.firestore.Timestamp.fromDate(start),
-      endTime: firebase.firestore.Timestamp.fromDate(end),
-      numberOfPlayers: numberOfPlayers,
-      userId: user.uid  // Store user UID instead of a reference for simpler queries and rule management
-    });
+    const reservationData = {
+      ...reservation,
+      userId: user.uid,
+      startTime: firebase.firestore.Timestamp.fromDate(reservation.startTime),
+      endTime: firebase.firestore.Timestamp.fromDate(reservation.endTime)
+    };
+
+    await reservationRef.set(reservationData);
+}
+
+public async checkAvailability(laneId: number, start: Date, end: Date): Promise<any[]> {
+  const startTimestamp = firebase.firestore.Timestamp.fromDate(start);
+  const endTimestamp = firebase.firestore.Timestamp.fromDate(end);
+
+  
+  const querySnapshot = await this.firestore.collection('reservations', ref => ref
+    .where('laneId', '==', laneId)
+    .where('startTime', '<=', endTimestamp)
+    .where('endTime', '>=', startTimestamp)
+  ).get().toPromise();
+
+  
+  if (!querySnapshot) {
+      throw new Error('Failed to retrieve data');
   }
 
-  getReservations(): Observable<any[]> {
-    return this.firestore.collection('reservations', ref => ref.orderBy('startTime')).valueChanges({ idField: 'id' });
+  
+  return querySnapshot.docs.map(doc => doc.data());
+}
+
+
+  
+  getReservations(userId?: string): Observable<Reservation[]> {
+    return this.firestore.collection<Reservation>('reservations', ref =>
+      userId ? ref.where('userId', '==', userId).orderBy('startTime') : ref.orderBy('startTime')
+    ).snapshotChanges().pipe(
+      map(actions => actions.map(a => {
+        const data = a.payload.doc.data() as Reservation;
+        const id = a.payload.doc.id;
+        return {
+          id,
+          ...data,
+          startTime: data.startTime instanceof firebase.firestore.Timestamp ? data.startTime.toDate() : data.startTime,
+          endTime: data.endTime instanceof firebase.firestore.Timestamp ? data.endTime.toDate() : data.endTime,
+        };
+      }))
+    );
   }
 
-  checkAvailability(laneId: number, start: Date, end: Date): Observable<any[]> {
-    return this.firestore.collection('reservations', ref => ref
-      .where('laneId', '==', laneId)
-      .where('startTime', '<=', firebase.firestore.Timestamp.fromDate(end))
-      .where('endTime', '>=', firebase.firestore.Timestamp.fromDate(start))
-    ).valueChanges();
+  
+  updateReservation(reservationId: string, updateData: Partial<Reservation>): Promise<void> {
+    const reservationRef = this.firestore.collection('reservations').doc(reservationId);
+    const updates = {
+      ...updateData,
+      startTime: updateData.startTime ? firebase.firestore.Timestamp.fromDate(updateData.startTime) : undefined,
+      endTime: updateData.endTime ? firebase.firestore.Timestamp.fromDate(updateData.endTime) : undefined,
+    };
+
+    return reservationRef.update(updates);
+  }
+
+  
+  deleteReservation(reservationId: string): Promise<void> {
+    return this.firestore.collection('reservations').doc(reservationId).delete();
   }
 }

@@ -1,14 +1,12 @@
-/* Styles for anchor tags, ensuring they are visibly different when hovered or clicked */
 a {
   text-decoration: none;
   color: white;
 }
 
 a:hover, a:active {
-  color: lightgray; /* Lighter gray color on hover for better visibility */
+  color: lightgray; 
 }
 
-/* Flexbox layout for navigation items with appropriate spacing and styling */
 .navigation-items {
   display: flex;
   flex-direction: row;
@@ -18,19 +16,16 @@ a:hover, a:active {
   margin: 0;
 }
 
-/* Hide navigation items on small screens to prioritize space */
 @media screen and (max-width: 576px) {
   .navigation-items {
       display: none;
   }
 }
 
-/* Fixed width for mat-sidenav to ensure consistent sizing */
 mat-sidenav {
   width: 250px;
 }
 
-/* Styling for the navigation wrapper to properly align items and manage spacing */
 .navigation-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -38,7 +33,6 @@ mat-sidenav {
   padding-left: 10px;
 }
 
-/* Hide hamburger menu icon on wider screens where the side navigation is always visible */
 @media screen and (min-width: 576px) {
   .hamburger-menu-wrapper {
       display: none;

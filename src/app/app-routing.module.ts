@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './shared/services/authguard.service.spec';  // Ensure this path is correct and that it's not pointing to `.spec` files
+import { AuthGuard } from './shared/services/authguard.service.spec';  
 import { ReservationComponent } from './pages/reservation/reservation.component';
+import { ManagerComponent } from './pages/manager/manager.component';
 
 const routes: Routes = [
   {
@@ -20,7 +21,7 @@ const routes: Routes = [
   {
     path: 'main',
     loadChildren: () => import('./pages/main/main.module').then(m => m.MainModule),
-    canActivate: [AuthGuard] // Assuming you want AuthGuard here
+    canActivate: [AuthGuard] 
   },
   {
     path: 'contact',
@@ -33,17 +34,21 @@ const routes: Routes = [
   {
     path: 'reservation',
     loadChildren: () => import('./pages/reservation/reservation.module').then(m => m.ReservationModule),
-    canActivate: [AuthGuard] // Assuming reservations should be protected
+    canActivate: [AuthGuard] 
   },
   {
     path: 'lanes', loadChildren: () => import('./pages/lane/lane.module').then(m => m.LaneModule),
-    canActivate: [AuthGuard] // Assuming reservations should be protected
+    canActivate: [AuthGuard] 
 
   },
+  { 
+    path: 'manager', component: ManagerComponent 
+  },
+
   { path: 'reservation/:laneId', component: ReservationComponent },
   {
     path: '**',
-    redirectTo: '/main' // Redirects to /main if no matching route is found
+    redirectTo: '/main' 
   }
 ];
 

@@ -10,6 +10,9 @@ import { AuthService } from './shared/services/auth.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
   page = '';
   routes: string[] = [];
   loggedInUser?: firebase.default.User | null;

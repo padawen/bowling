@@ -1,0 +1,19 @@
+<li *ngFor="let reservation of reservations$ | async" class="reservation-item mat-elevation-z2">
+  <div class="reservation-info">
+    <mat-icon class="lane-icon">directions_car</mat-icon>
+    <div class="reservation-details">
+      <div class="lane-id">{{ reservation?.laneId }}</div>
+      <div class="time-range">
+        {{ reservation?.startTime }} to {{ reservation?.endTime }}
+      </div>
+    </div>
+  </div>
+  <div class="reservation-actions">
+    <button mat-icon-button color="warn" (click)="deleteReservation(reservation?.id)">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="updateReservation(reservation)">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+</li>

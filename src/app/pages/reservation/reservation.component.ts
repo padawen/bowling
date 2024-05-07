@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, from } from 'rxjs';
 import { ReservationService } from '../../shared/services/reservation.service';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Reservation } from '../../shared/models/reservation';
 
 @Component({
   selector: 'app-reservation',
@@ -14,7 +15,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
   reservationForm!: FormGroup;
   laneId!: number;
   reservationError: string | null = null;
-  private authSub!: Subscription;
+  private routeSub!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -24,7 +25,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.routeSub = this.route.params.subscribe(params => {
       this.laneId = +params['laneId'];
       this.initializeForm();
     });
@@ -35,7 +36,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
       date: ['', Validators.required],
       time: ['', Validators.required],
       numberOfPlayers: ['', [Validators.required, Validators.min(1)]],
-      duration: [2, [Validators.required]] // Fixed duration of 2 hours
+      duration: [2, [Validators.required]] 
     });
   }
 
@@ -45,68 +46,50 @@ export class ReservationComponent implements OnInit, OnDestroy {
       const [hours, minutes] = formValue.time.split(':').map((val: string) => parseInt(val, 10));
       const startTime = new Date(formValue.date);
       startTime.setHours(hours, minutes);
-  
-      // Setting the duration to 1 hour and 59 minutes
-      const durationInMilliseconds = (1 * 60 * 60 * 1000) + (59 * 60 * 1000); // 1 hour + 59 minutes in milliseconds
+
+      const durationInMilliseconds = (1 * 60 * 60 * 1000) + (59 * 60 * 1000);
       const endTime = new Date(startTime.getTime() + durationInMilliseconds);
-  
-      this.afAuth.currentUser.then(user => {
-        if (user) {
-          this.reservationService.checkAvailability(this.laneId, startTime, endTime).subscribe(
-            reservations => {
-              if (reservations && reservations.length > 0) {
-                this.reservationError = 'This lane is already reserved for the selected time. Please choose a different time.';
-              } else {
-                this.reservationService.addReservation(this.laneId, startTime, endTime, formValue.numberOfPlayers)
-                  .then(() => {
-                    console.log('Reservation successfully added!');
-                    this.reservationForm.reset();
-                  })
-                  .catch(error => {
-                    console.error('Error adding reservation:', error);
-                    this.reservationError = 'Error processing your reservation. Please try again.';
-                  });
-              }
-            },
-            error => {
-              console.error('Error checking reservation availability:', error);
-              this.reservationError = 'Error checking availability. Please try again later.';
-            }
-          );
-        } else {
-          this.reservationError = 'You must be logged in to make a reservation.';
-        }
-      });
+
+      this.checkAndMakeReservation(startTime, endTime);
     }
   }
 
-  private checkAndMakeReservation(startTime: Date, endTime: Date) {
-    this.reservationService.checkAvailability(this.laneId, startTime, endTime).subscribe(
-      reservations => {
+  private checkAndMakeReservation(startTime: Date, endTime: Date): void {
+    from(this.reservationService.checkAvailability(this.laneId, startTime, endTime)).subscribe({
+      next: (reservations: string | any[]) => {
         if (reservations.length > 0) {
           this.reservationError = 'This lane is already reserved for the selected time. Please choose a different time.';
-        } else {
-          this.reservationService.addReservation(this.laneId, startTime, endTime, this.reservationForm.value.numberOfPlayers)
-            .then(() => {
-              console.log('Reservation successfully added!');
-              this.reservationForm.reset();
-            })
-            .catch(error => {
-              console.error('Error adding reservation:', error);
-              this.reservationError = 'Error processing your reservation. Please try again.';
-            });
+          return;
         }
+        this.addReservation({
+          laneId: this.laneId,
+          startTime: startTime,
+          endTime: endTime,
+          numberOfPlayers: this.reservationForm.value.numberOfPlayers
+        });
       },
-      error => {
-        console.error('Error checking reservation availability:', error);
-        this.reservationError = 'Error checking availability. Please try again later.';
+      error: (err: { message: string | null }) => {
+        this.reservationError = err.message;
+        console.error('Error checking reservation availability:', err);
       }
-    );
+    });
+  }
+  
+  private addReservation(reservation: Reservation): void {
+    this.reservationService.addReservation(reservation)
+      .then(() => {
+        console.log('Reservation successfully added!');
+        this.reservationForm.reset();
+      })
+      .catch(error => {
+        console.error('Error adding reservation:', error);
+        this.reservationError = 'Error processing your reservation. Please try again.';
+      });
   }
 
   ngOnDestroy(): void {
-    if (this.authSub) {
-      this.authSub.unsubscribe();
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
     }
   }
 }
