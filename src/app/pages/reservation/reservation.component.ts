@@ -78,13 +78,10 @@ export class ReservationComponent implements OnInit, OnDestroy {
   private addReservation(reservation: Reservation): void {
     this.reservationService.addReservation(reservation)
       .then(() => {
-        console.log('Reservation successfully added!');
+        alert('Reservation added successfully!');
         this.reservationForm.reset();
       })
-      .catch(error => {
-        console.error('Error adding reservation:', error);
-        this.reservationError = 'Error processing your reservation. Please try again.';
-      });
+      .catch(error => alert(error.message));
   }
 
   ngOnDestroy(): void {

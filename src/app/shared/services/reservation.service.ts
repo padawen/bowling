@@ -39,7 +39,7 @@ export class ReservationService {
     if (!user) {
       throw new Error('Authentication required');
     }
-
+  
     const reservationRef = this.firestore.collection('reservations').doc();
     const reservationData = {
       ...reservation,
@@ -47,9 +47,11 @@ export class ReservationService {
       startTime: firebase.firestore.Timestamp.fromDate(reservation.startTime),
       endTime: firebase.firestore.Timestamp.fromDate(reservation.endTime)
     };
-
+  
     await reservationRef.set(reservationData);
-}
+    return Promise.resolve();
+  }
+  
 
 public async checkAvailability(laneId: number, start: Date, end: Date): Promise<any[]> {
   const startTimestamp = firebase.firestore.Timestamp.fromDate(start);
@@ -91,14 +93,30 @@ public async checkAvailability(laneId: number, start: Date, end: Date): Promise<
   }
 
   
-  updateReservation(reservationId: string, updateData: Partial<Reservation>): Promise<void> {
+  async updateReservation(reservationId: string, updateData: Partial<Reservation>): Promise<void> {
+    
+    const existingReservation = await this.firestore.collection('reservations').doc(reservationId).ref.get();
+    if (!existingReservation.exists) {
+      throw new Error('Reservation does not exist');
+    }
+  
+    
+    const { laneId, startTime, endTime } = updateData;
+  
+    
+    const reservations = await this.checkAvailability(laneId!, startTime!, endTime!);
+    if (reservations.length > 0) {
+      throw new Error('This lane is already reserved for the selected time. Please choose a different time.');
+    }
+  
+    
     const reservationRef = this.firestore.collection('reservations').doc(reservationId);
     const updates = {
       ...updateData,
-      startTime: updateData.startTime ? firebase.firestore.Timestamp.fromDate(updateData.startTime) : undefined,
-      endTime: updateData.endTime ? firebase.firestore.Timestamp.fromDate(updateData.endTime) : undefined,
+      startTime: startTime ? firebase.firestore.Timestamp.fromDate(startTime) : undefined,
+      endTime: endTime ? firebase.firestore.Timestamp.fromDate(endTime) : undefined,
     };
-
+  
     return reservationRef.update(updates);
   }
 

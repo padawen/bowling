@@ -1,22 +1,22 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="side" opened="true" fixedInViewport="true" [attr.role]="'navigation'">
-    <mat-toolbar color="primary">Menu</mat-toolbar>
+    <mat-toolbar color="accent">Menu</mat-toolbar>
     <mat-nav-list>
       <a mat-list-item routerLink="/main" (click)="sidenav.close()">Main</a>
       <a mat-list-item *ngIf="loggedInUser" routerLink="/lane" (click)="sidenav.close()">Lanes</a>
       <a mat-list-item *ngIf="loggedInUser" routerLink="/contact" (click)="sidenav.close()">Contact</a>
-      <a mat-list-item *ngIf="loggedInUser" routerLink="/manager" (click)="sidenav.close()">Manage Reservations</a>
       <a mat-list-item *ngIf="!loggedInUser" routerLink="/login" (click)="sidenav.close()">Login</a>
       <a mat-list-item *ngIf="!loggedInUser" routerLink="/register" (click)="sidenav.close()">Register</a>
+      <a mat-list-item *ngIf="loggedInUser" routerLink="/manager" (click)="sidenav.close()">Manage</a>
       <a mat-list-item *ngIf="loggedInUser" (click)="logout(); sidenav.close()">Logout</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
+    <mat-toolbar color="accent">
       <button mat-icon-button (click)="sidenav.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>Bowling-reservation</span>
+      <span>Bowling-Reservation</span>
     </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>

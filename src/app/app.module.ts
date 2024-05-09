@@ -11,15 +11,13 @@ import { environment } from '../environments/environments';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CommonModule } from '@angular/common';
-import { ManagerComponent } from './pages/manager/manager.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent,
-    ManagerComponent
-  ],
+    MenuComponent
+    ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

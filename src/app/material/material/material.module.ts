@@ -8,14 +8,8 @@ import { MatCardModule} from '@angular/material/card';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';  
-
-
-
-
-
-
 
 const materialModules = [
   MatToolbarModule,
@@ -28,8 +22,7 @@ const materialModules = [
   MatProgressSpinnerModule,
   MatInputModule,
   MatDatepickerModule,
-  MatNativeDateModule,
-  MatIconModule
+  MatNativeDateModule
 ];
 
 @NgModule({

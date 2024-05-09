@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './shared/services/authguard.service.spec';  
 import { ReservationComponent } from './pages/reservation/reservation.component';
-import { ManagerComponent } from './pages/manager/manager.component';
 
 const routes: Routes = [
   {
@@ -41,8 +40,10 @@ const routes: Routes = [
     canActivate: [AuthGuard] 
 
   },
-  { 
-    path: 'manager', component: ManagerComponent 
+  {
+    path: 'manager',
+    loadChildren: () => import('./pages/manager/manager.module').then(m => m.ManagerModule),
+    canActivate: [AuthGuard]
   },
 
   { path: 'reservation/:laneId', component: ReservationComponent },
